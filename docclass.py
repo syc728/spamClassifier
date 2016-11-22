@@ -138,10 +138,10 @@ class fisherclassifier(classifier):
         return min(sum, 1.0)
     
     def fisherprob(self, item, cat):
-        p = Decimal(1)
+        p = 1
         features = self.getfeatures(item)
         for f in features:
-            p *= Decimal(self.weightedprob(f,cat,self.cprob))
+            p *= self.weightedprob(f,cat,self.cprob)
             
         try:
             fscore = -2*math.log(p)
@@ -170,8 +170,6 @@ class fisherclassifier(classifier):
                 best = c
                 max = p
         return best
-
-
 
 
 

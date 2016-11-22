@@ -2,8 +2,14 @@ import docclass
 import os
 import glob
 
-def train_naivebayes():
-    train_path = os.getcwd() + '\\train\\*.txt'
+def score(TP,FN,FP,TN):
+    P = 1.0 * TP / (TP + FP)
+    R = 1.0 * TP / (TP + FN)
+    
+    print "Precision : ", P
+    print "Recall : ", R  
+
+def train_naivebayes(train_path, test_path):
     cl = docclass.naivebayes(docclass.getwords)
     
     for filename in glob.glob(train_path):
@@ -19,7 +25,6 @@ def train_naivebayes():
     FP = 0.0
     TN = 0.0
     
-    test_path = os.getcwd() + '\\test\\*.txt'
     cl.setthreshold('ham',2.4)
     for filename in glob.glob(test_path):
         with open(filename,'r') as f:
@@ -39,14 +44,10 @@ def train_naivebayes():
     
     print "Test Done!"
     
-    P = 1.0 * TP / (TP + FP)
-    R = 1.0 * TP / (TP + FN)
+    score(TP,FN,FP,TN)
     
-    print "Precision : ", P
-    print "Recall : ", R  
 
-def train_fisher():
-    train_path = os.getcwd() + '\\train\\*.txt'
+def train_fisher(train_path, test_path):
     cl = docclass.fisherclassifier(docclass.getwords)
     
     for filename in glob.glob(train_path):
@@ -62,7 +63,6 @@ def train_fisher():
     FP = 0.0
     TN = 0.0
     
-    test_path = os.getcwd() + '\\test\\*.txt'
     for filename in glob.glob(test_path):
         with open(filename,'r') as f:
             f = f.read()
@@ -81,14 +81,12 @@ def train_fisher():
     
     print "Test Done!"
     
-    P = 1.0 * TP / (TP + FP)
-    R = 1.0 * TP / (TP + FN)
-    
-    print "Precision : ", P
-    print "Recall : ", R  
+    score(TP,FN,FP,TN)
 
 if __name__ == '__main__':
+    train_path = os.getcwd() + '\\train\\*.txt'
+    test_path = os.getcwd() + '\\test\\*.txt'
     print "Naive Bayes:"
-    #train_naivebayes()
+    train_naivebayes(train_path, test_path)
     print "Fisher:"
-    train_fisher()
+    train_fisher(train_path, test_path)

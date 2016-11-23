@@ -1,6 +1,7 @@
 import docclass
 import os
 import glob
+import nn
 
 def score(TP,FN,FP,TN):
     P = 1.0 * TP / (TP + FP)
@@ -82,11 +83,52 @@ def train_fisher(train_path, test_path):
     print "Test Done!"
     
     score(TP,FN,FP,TN)
+    
+def train_nn(train_path, test_path):
+    ham = 0
+    spam = 1
+
+    allans = [ham,spam]
+    
+    words = {}
+    
+    spamnet = nn.searchnet('spam.db')
+    spamnet.maketables()
+    
+    for filename in glob.glob(train_path):
+        with open(filename,'r') as f:
+            f = f.read()
+            for word in nn.getwords(f):
+                if words.has_key(word) == False:
+                    wordslen = len(words) + 2
+                    words[word] = wordslen
+    
+    cnt = 1
+    for filename in glob.glob(train_path):
+        print cnt
+        cnt = cnt + 1
+        with open(filename,'r') as f:
+            f = f.read()
+            features = nn.getwords(f)
+            wordNum = [words[word] for word in features]
+            spamnet.generatehiddennode(wordNum, allans)
+            label = filename.split('.')[3]
+            if label == 'ham':
+                label = 0
+            else:
+                label = 1
+            spamnet.trainquery(wordNum, allans, label)
+    
+    print "Train Done!"
 
 if __name__ == '__main__':
     train_path = os.getcwd() + '\\train\\*.txt'
     test_path = os.getcwd() + '\\test\\*.txt'
-    print "Naive Bayes:"
-    train_naivebayes(train_path, test_path)
-    print "Fisher:"
-    train_fisher(train_path, test_path)
+    #print "Naive Bayes:"
+    #train_naivebayes(train_path, test_path)
+    #print "Fisher:"
+    #train_fisher(train_path, test_path)
+    
+    train_nn(train_path, test_path)
+    
+    
